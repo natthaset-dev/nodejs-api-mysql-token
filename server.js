@@ -66,6 +66,34 @@ app.post('/api/v1/login', (req, res) => {
     }
 })
 
+app.get('/api/v1/materials', verifyToken, (req, res) => {
+    jwt.verify(req.token, secret, (error, auth) => {
+        if (error) {
+            res.status(403).send({ error: true, status: 403, message: 'Access denied.' })
+        } else {
+            const sql = 'SELECT * FROM materials'
+            db.query(sql, (error, results, fields) => {
+                if (error) throw error
+
+                if (results === undefined || results.length == 0) {
+                    res.send({
+                        error: true,
+                        status: 200,
+                        message: 'Data is not found.'
+                    })
+                } else {
+                    res.send({
+                        error: false,
+                        status: 200,
+                        message: 'Successfully get all materials.',
+                        data: results
+                    })
+                }
+            })
+        }
+    })
+})
+
 app.post('/api/v1/material', verifyToken, (req, res) => {
     jwt.verify(req.token, secret, (error, auth) => {
         if (error) {
