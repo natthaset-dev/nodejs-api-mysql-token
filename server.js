@@ -89,7 +89,7 @@ app.post('/api/v1/material', verifyToken, (req, res) => {
                     res.send({
                         error: false,
                         status: 200,
-                        message: 'Materisl successfully added.',
+                        message: 'Successfully material added.',
                         data: results
                     })
                 })
