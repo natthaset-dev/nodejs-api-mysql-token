@@ -192,12 +192,42 @@ app.put('/api/v1/material', verifyToken, (req, res) => {
                         res.send({
                             error: false,
                             status: 200,
-                            message: 'Successfully material added.',
+                            message: 'Successfully material updated.',
                             data: results
                         })
                     }
                 })
             }
+        }
+    })
+})
+
+// delete material by id
+app.delete('/api/v1/material', verifyToken, (req, res) => {
+    jwt.verify(req.token, secret, (error, auth) => {
+        if (error) {
+            res.status(403).send({ error: true, status: 403, message: 'Access denied.' })
+        } else {
+            const matCode = req.body.matCode
+            const sql = `DELETE FROM materials WHERE mat_code = '${matCode}'`
+            db.query(sql, (error, results, fields) => {
+                if (error) throw error
+
+                if (results === undefined || results.length == 0) {
+                    res.send({
+                        error: true,
+                        status: 200,
+                        message: 'Data is not found.'
+                    })
+                } else {
+                    res.send({
+                        error: false,
+                        status: 200,
+                        message: 'Successfully material deleted.',
+                        data: results[0]
+                    })
+                }
+            })
         }
     })
 })
