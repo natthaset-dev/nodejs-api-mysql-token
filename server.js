@@ -23,7 +23,10 @@ db.connect((error) => {
 })
 
 app.get('/', (req, res) => {
-    return res.send({ error: false, message: 'Welcome to RESTful APIs by ModeJS.' })
+    return res.send({
+        error: false,
+        message: 'Welcome to RESTful APIs by ModeJS.'
+    })
 })
 
 // login get new token
@@ -152,6 +155,47 @@ app.post('/api/v1/material', verifyToken, (req, res) => {
                         message: 'Successfully material added.',
                         data: results
                     })
+                })
+            }
+        }
+    })
+})
+
+// update material by id
+app.put('/api/v1/material', verifyToken, (req, res) => {
+    jwt.verify(req.token, secret, (error, auth) => {
+        if (error) {
+            res.status(403).send({ error: true, status: 403, message: 'Access denied.' })
+        } else {
+            const matCode = req.body.matCode
+            const matDesc = req.body.matDesc
+            const baseUom = req.body.baseUom
+
+            if (!matCode || !matDesc || !baseUom) {
+                res.status(400).send({
+                    error: true,
+                    status: 400,
+                    message: 'Please provide material data.'
+                })
+            } else {
+                const sql = 'UPDATE materials SET mat_desc = ?, base_uom = ?, updated_by = ? WHERE mat_code = ?'
+                db.query(sql, [matDesc, baseUom, auth.user.id, matCode], (error, results, fields) => {
+                    if (error) throw error
+
+                    if (results.affectedRows == 0) {
+                        res.send({
+                            error: true,
+                            status: 200,
+                            message: 'Data is not found.'
+                        })
+                    } else {
+                        res.send({
+                            error: false,
+                            status: 200,
+                            message: 'Successfully material added.',
+                            data: results
+                        })
+                    }
                 })
             }
         }
